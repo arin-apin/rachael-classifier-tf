@@ -1,6 +1,6 @@
 # Rachael Classifier TF
 
-**Plataforma Profesional de Machine Learning para Entrenamiento de Clasificadores de Imágenes**
+**Docker para Entrenamiento de Modelos de Clasificación de Imágenes mediante Tensorflow**
 
 Una aplicación completa basada en TensorFlow para entrenar, optimizar y desplegar modelos de clasificación de imágenes con arquitecturas state-of-the-art como EfficientNet, ResNet y MobileNet.
 
@@ -319,59 +319,30 @@ dataset_name/
 #### 1. Rotación
 - **Rango**: 0-180 grados
 - **Uso**: Mejora invariancia a orientación
-- **Recomendado**: 15-30 grados para objetos naturales
+
 
 #### 2. Traslación
 - **Traslación X**: Desplazamiento horizontal (0-100%)
 - **Traslación Y**: Desplazamiento vertical (0-100%)
 - **Uso**: Ayuda con objetos descentrados
-- **Recomendado**: 10-20% para datasets generales
+
 
 #### 3. Volteo (Flip)
 - **Horizontal**: Espejo izquierda-derecha
 - **Vertical**: Espejo arriba-abajo
 - **Uso**: Duplica datos sintéticamente
-- **Recomendado**: Horizontal casi siempre, vertical según el caso
+
 
 #### 4. Zoom
 - **Rango**: 0-100% (zoom in/out)
 - **Uso**: Simula diferentes distancias de captura
-- **Recomendado**: 10-20% para variabilidad de escala
+
 
 #### 5. Brillo
 - **Brighten**: Incrementa luminosidad (0-100%)
 - **Darken**: Reduce luminosidad (0-100%)
 - **Uso**: Robustez a condiciones de iluminación
-- **Recomendado**: 20-30% para ambientes variables
 
-### Estrategias Recomendadas
-
-**Dataset Pequeño (<500 imágenes por clase)**
-```yaml
-Rotación: 20-30 grados
-Traslación: 15-20%
-Volteo Horizontal: Activado
-Zoom: 15-20%
-Brillo: 25-30%
-```
-
-**Dataset Mediano (500-2000 imágenes por clase)**
-```yaml
-Rotación: 10-15 grados
-Traslación: 10-15%
-Volteo Horizontal: Activado
-Zoom: 10-15%
-Brillo: 15-20%
-```
-
-**Dataset Grande (>2000 imágenes por clase)**
-```yaml
-Rotación: 5-10 grados
-Traslación: 5-10%
-Volteo Horizontal: Según dominio
-Zoom: 5-10%
-Brillo: 10-15%
-```
 
 ---
 
@@ -478,50 +449,6 @@ Ventajas: Máxima compresión, inferencia rápida
 | EfficientNetB0 | ~29MB | ~29MB | ~14.5MB | ~7MB |
 | EfficientNetV2B0 | ~44MB | ~44MB | ~22MB | ~11MB |
 | ResNet50 | ~98MB | ~98MB | ~49MB | ~24MB |
-
-### Uso de Modelos TFLite
-
-#### Python
-```python
-import tensorflow as tf
-import numpy as np
-from PIL import Image
-
-# Cargar modelo
-interpreter = tf.lite.Interpreter(model_path="model_int8.tflite")
-interpreter.allocate_tensors()
-
-# Obtener detalles de input/output
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
-
-# Preparar imagen
-img = Image.open("test.jpg").resize((224, 224))
-img_array = np.array(img, dtype=np.float32) / 255.0
-img_array = np.expand_dims(img_array, axis=0)
-
-# Inferencia
-interpreter.set_tensor(input_details[0]['index'], img_array)
-interpreter.invoke()
-predictions = interpreter.get_tensor(output_details[0]['index'])
-
-print(f"Predicción: {np.argmax(predictions)}")
-```
-
-#### Android (Kotlin)
-```kotlin
-import org.tensorflow.lite.Interpreter
-import java.nio.ByteBuffer
-
-val tfliteModel = loadModelFile("model_int8.tflite")
-val interpreter = Interpreter(tfliteModel)
-
-val inputBuffer: ByteBuffer = preprocessImage(bitmap)
-val outputBuffer = Array(1) { FloatArray(NUM_CLASSES) }
-
-interpreter.run(inputBuffer, outputBuffer)
-val prediction = outputBuffer[0].indices.maxByOrNull { outputBuffer[0][it] }
-```
 
 ---
 
@@ -799,7 +726,7 @@ docker compose up -d
 ## Mejores Prácticas
 
 ### Dataset
-- Mínimo 100 imágenes por clase (ideal 500+)
+- Mínimo 50 imágenes por clase (ideal 500+)
 - Balance de clases (cantidades similares)
 - Imágenes diversas (ángulos, iluminaciones, fondos)
 - Calidad consistente
@@ -832,8 +759,8 @@ R: Sí, detecta automáticamente el hardware y usa CPU si no hay GPU.
 **P: ¿Cuánta RAM necesito?**
 R: Mínimo 8GB, recomendado 16GB+ para modelos grandes.
 
-**P: ¿Puedo exportar a otros formatos (ONNX, CoreML)?**
-R: Actualmente exporta SavedModel y TFLite. Para ONNX/CoreML usa herramientas de conversión externas.
+**P: ¿Puedo exportar a otros formatos ONNX?**
+R: Actualmente exporta SavedModel y TFLite. Para ONNX usa el Repositorio rachael-vision-classifier que utiliza Pytorch para entrenamiento.
 
 **P: ¿Soporta detección de objetos o segmentación?**
 R: No, solo clasificación de imágenes. Para otras tareas se requeriría refactorización significativa.
@@ -863,18 +790,6 @@ R: Los modelos se entrenan desde arquitecturas pre-entrenadas en ImageNet. Para 
 
 ---
 
-## Contribuciones
-
-Las contribuciones son bienvenidas! Por favor:
-
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
----
-
 ## Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
@@ -885,26 +800,14 @@ Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detall
 
 **Rachael Vision - Advanced AI Technology**
 
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- Email: tu-email@ejemplo.com
-- Web: https://tu-sitio.com
+- Email: gemma@arinapin.ai 
+- Web: https://arinapin.io/
 
 ---
 
 ## Changelog
 
-### v2.0 - TensorFlow Edition (2024-11-07)
-- Migración completa a TensorFlow 2.9.1
-- 13 arquitecturas pre-entrenadas
-- Interfaz Gradio mejorada
-- Cuantización TFLite integrada
-- Docker optimizado para GPU/CPU
-- Sistema de validación de dataset
-- Data augmentation avanzado
+### v1.0 - Initial Release TensorFlow Edition (2024-11-12)
 
-### v1.0 - Initial Release
-- Versión inicial con PyTorch
-
----
 
 **Made with by Rachael Vision**
