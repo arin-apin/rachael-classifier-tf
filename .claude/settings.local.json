@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker logs:*)",
+      "Bash(curl:*)",
+      "Bash(chmod:*)",
+      "Bash(docker:*)",
+      "Bash(sudo chown:*)",
+      "Bash(nvidia-smi)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,41 @@
+services:
+  rachael-trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: rachael-classifier-tf
+    # Runtime will be set to 'nvidia' if GPU is available, otherwise defaults to runc
+    runtime: ${DOCKER_RUNTIME:-runc}
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./models:/workspace/models
+      - ./data:/workspace/data
+      - ./logs:/workspace/logs
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    environment:
+      - DISPLAY=${DISPLAY}
+      - PYTHONUNBUFFERED=1
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+      - TF_CPP_MIN_LOG_LEVEL=2
+      - TF_ENABLE_ONEDNN_OPTS=0
+      # GPU environment variables (ignored if no GPU)
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+      - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-compute,utility}
+    restart: unless-stopped
+    networks:
+      - rachael-network
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT:-12G}
+        reservations:
+          memory: ${MEMORY_RESERVATION:-4G}
+
+networks:
+  rachael-network:
+    driver: bridge

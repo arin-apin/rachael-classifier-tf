@@ -1,0 +1,14 @@
+# TensorFlow 2.9.1 compatible versions (for nvcr.io/nvidia/tensorflow:22.09-tf2-py3)
+# tensorflow==2.9.1 (already included in base image)
+gradio==3.50.2
+numpy>=1.21.0,<1.25.0
+matplotlib>=3.5.0,<3.8.0
+Pillow>=9.0.0,<11.0.0
+scikit-learn>=1.0.0,<1.4.0
+seaborn>=0.11.0,<0.13.0
+opencv-python-headless>=4.6.0,<4.9.0
+pandas>=1.4.0,<2.2.0
+tqdm>=4.64.0
+imageio>=2.19.0,<2.33.0
+typing-extensions>=4.0.0
+requests>=2.27.0,<2.33.0
